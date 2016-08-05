@@ -92,7 +92,7 @@ def merge2sents(capPairs):
         ''' determine using lower case or end punct
             also make sure with no long interval in between '''
         if time2Second(cap[0].split(' --> ')[0]) - \
-           time2Second(prevCap[0].split(' --> ')[1]) < 0.5 and \
+           time2Second(prevCap[0].split(' --> ')[1]) < 1.1 and \
            (cap[1][0].islower() or prevCap[1].strip()[-1] not in ['.', '!', '?']):
             logging.info('detect: ' + sentSplit[0])
 
@@ -169,8 +169,9 @@ def filterByLength(capPairs):
     logging.info('len after length filter: ' + str(len(capPairs)) + '\n')
     return capPairs   
 
-''' Add 1 s margin before and after each clip '''
+''' Add sec s margin before and after each clip '''
 def addMargin(capPairs, sec):
+    logging.info('adding ' + str(sec) + 's margin')
     for it, pair in enumerate(capPairs):
         begSecond = time2Second(pair[0].split(' --> ')[0]) - sec
         endSecond = time2Second(pair[0].split(' --> ')[1]) + sec
@@ -181,6 +182,30 @@ def addMargin(capPairs, sec):
     return capPairs
 # addMargin([('00:00:00.111 --> 00:00:02.222', 'aaa'), \
 #            ('00:00:03.111 --> 00:00:05.222', 'bbb')])
+
+''' Shift all begining timestamps in a video '''
+def shiftBeg(capPairs, sec):
+    logging.info('shifting begining timestamp ' + str(sec) + 's')
+    for it, pair in enumerate(capPairs):
+        begSecond = time2Second(pair[0].split(' --> ')[0]) + sec
+        endSecond = time2Second(pair[0].split(' --> ')[1])
+        if begSecond < 0:  # avoid crossing previous bound
+            continue
+        capPairs[it] = (second2Time(begSecond) + ' --> ' + \
+                        second2Time(endSecond), pair[1])
+    return capPairs
+
+''' Shift all ending timestamps in a video '''
+def shiftEnd(capPairs, sec):
+    logging.info('shifting ending timestamp ' + str(sec) + 's')
+    for it, pair in enumerate(capPairs):
+        begSecond = time2Second(pair[0].split(' --> ')[0])
+        endSecond = time2Second(pair[0].split(' --> ')[1]) + sec 
+        if (it == len(capPairs) - 1):  # avoid crossing ending bound
+            continue
+        capPairs[it] = (second2Time(begSecond) + ' --> ' + \
+                        second2Time(endSecond), pair[1])
+    return capPairs
 
 ''' Remove name before colons in captions '''
 def rmNameBefColon(capPairs):
