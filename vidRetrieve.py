@@ -11,11 +11,18 @@
 import json
 
 def idx2title(idx):
-    return({v:k for k,v in json.load(open(\
-    '/home/gengshan/public_html/data/ori_data_list.json', 'r')).items()}\
-    [int(idx)])
+    dict = {v:k for k,v in json.load(open(\
+    '/home/gengshan/public_html/data/dictTitleAll.json', 'r')).items()}
+    if idx in dict.keys():
+        return(dict[int(idx)])
+    else:
+        return None  # doesn't exist
 
 def title2idx(title):
-    return(json.load(open('/home/gengshan/public_html/data/ori_data_list.json'\
-           , 'r'))[title])
+    dict = json.load(open('/home/gengshan/public_html/data/dictTitleAll.json'\
+           , 'r'))
+    if title in dict.keys():
+        return(dict[title])
+    else:
+        return -1  # doesn't exist
 

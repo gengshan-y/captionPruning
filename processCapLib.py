@@ -5,12 +5,6 @@ import logging  # use the same root logger
 sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')  # text2sent
 printable = set(string.printable)  # filter non-ascii
   
-''' Map title to video number in data visualization web '''
-def vid2Num(title):
-    import json
-    dict = json.load(open('/home/gengshan/public_html/data/ori_data_list.json'))
-    return str(dict[title])
-
 ''' Dump caption pairs in dumpPath '''
 def dumpVTT(dumpPath, newCapPairs):
     Newcaps = 'WEBVTT\nKind: captions\nLanguage: en\n\n'
