@@ -144,12 +144,18 @@ def replaceSpecialCode(cap):
     cap = cap.encode('utf-8')  # convert back to symbol [ for translate()]
     return cap
 
-''' Filter out short videos '''
-def filterByTime(capPairs, sec):
+''' Filter out short videos, and warn if too long '''
+def filterByTime(capPairs, sec1, sec2):
     logging.info('len before time filter: ' + str(len(capPairs)))
     for it, pair in reversed(list(enumerate(capPairs))):
-        if timeLapse(pair[0]) < sec:
+        lapseTime = timeLapse(pair[0])
+        if lapseTime < sec1:
             capPairs.remove(pair)
+        if lapseTime > 20:
+            logging.warning('warning: ' + pair[1] + ' ' + str(timeLapse(pair[0])) + 's')
+        if lapseTime > sec2:
+            capPairs.remove(pair)
+            logging.info('removed ' + pair[1] + ' ' + str(timeLapse(pair[0])) + 's')
     logging.info('len after time filter: ' + str(len(capPairs)) + '\n')
     return capPairs
 
